@@ -4,7 +4,10 @@ const Game = {
     W: 0, H: 0,
     state: 'title',
     score: 0,
+    coins: 0,
+    coinList: [],
     currentLevel: 0,
+    upgrades: {},
     stars: [],
     obstacles: [],
     bgStyle: 'nebula',
@@ -21,10 +24,13 @@ const Game = {
         Particles.init();
         Bullets.init();
 
+        this.upgrades = Upgrades.load();
+
         this.canvas.addEventListener('click', () => {
             Audio.init();
             if (this.state === 'title') this.startGame();
             else if (this.state === 'gameover' || this.state === 'victory') this.startGame();
+            else if (this.state === 'shop') Shop.handleClick(Input.mouse.x, Input.mouse.y);
         });
 
         window.addEventListener('keydown', (e) => {
@@ -63,9 +69,12 @@ const Game = {
     startGame() {
         this.state = 'playing';
         this.score = 0;
+        this.coins = 0;
+        this.coinList = [];
         this.currentLevel = 0;
         this.obstacles = [];
         Player.init(Utils.WORLD_W / 2, Utils.WORLD_H / 2);
+        Upgrades.applyToPlayer(this.upgrades);
         Enemies.clear();
         Bullets.activeCount = 0;
         Particles.activeCount = 0;
@@ -104,8 +113,9 @@ const Game = {
     },
 
     update(dt) {
-        if (this.state === 'title' || this.state === 'gameover' || this.state === 'victory' || this.state === 'paused') {
+        if (this.state === 'title' || this.state === 'gameover' || this.state === 'victory' || this.state === 'paused' || this.state === 'shop') {
             Input.update(Camera);
+            Shop.update(dt);
             return;
         }
 
@@ -124,6 +134,9 @@ const Game = {
         Camera.update(dt);
         UI.update(dt);
 
+        Shop.update(dt);
+
+        this.updateCoins(dt);
         this.checkCollisions();
 
         if (!Player.alive && this.state === 'playing') {
@@ -133,7 +146,8 @@ const Game = {
 
         if (Spawner.waveClear && this.state === 'playing') {
             Spawner.waveClear = false;
-            this.loadLevel(this.currentLevel + 1);
+            this.state = 'shop';
+            Shop.show();
         }
     },
 
@@ -158,6 +172,34 @@ const Game = {
             }
         }
         return false;
+    },
+
+    spawnCoin(x, y, value) {
+        this.coinList.push({ x, y, value, radius: 8, life: 15, bob: Utils.rand(0, Utils.PI2) });
+    },
+
+    updateCoins(dt) {
+        for (let i = this.coinList.length - 1; i >= 0; i--) {
+            const c = this.coinList[i];
+            c.life -= dt;
+            if (c.life <= 0) {
+                this.coinList.splice(i, 1);
+                continue;
+            }
+            const range = 60 * Player.pickupRange;
+            if (Utils.distSq(c.x, c.y, Player.x, Player.y) < range * range) {
+                const dx = Player.x - c.x;
+                const dy = Player.y - c.y;
+                const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+                c.x += (dx / dist) * 300 * dt;
+                c.y += (dy / dist) * 300 * dt;
+                if (dist < Player.radius + c.radius) {
+                    this.coins += c.value;
+                    this.coinList.splice(i, 1);
+                    Audio.play('powerup');
+                }
+            }
+        }
     },
 
     checkCollisions() {
@@ -284,6 +326,7 @@ const Game = {
         Enemies.render(ctx);
         Boss.render(ctx);
         PowerUps.render(ctx);
+        this.renderCoins(ctx);
         Player.render(ctx);
         Particles.render(ctx);
         Camera.restore(ctx);
@@ -292,6 +335,7 @@ const Game = {
         HUD.render(ctx, W, H);
         UI.renderOverlayTexts(ctx, W, H);
 
+        if (this.state === 'shop') Shop.render(ctx, W, H);
         if (this.state === 'paused') UI.renderPauseScreen(ctx, W, H);
         if (this.state === 'gameover') UI.renderGameOverScreen(ctx, W, H);
         if (this.state === 'victory') UI.renderVictoryScreen(ctx, W, H);
@@ -330,6 +374,34 @@ const Game = {
             ctx.shadowBlur = 6;
             ctx.strokeRect(o.x, o.y, o.w, o.h);
             ctx.shadowBlur = 0;
+        }
+    },
+
+    renderCoins(ctx) {
+        const t = Date.now() / 1000;
+        for (const c of this.coinList) {
+            const bob = Math.sin(t * 3 + c.bob) * 3;
+            const alpha = c.life < 3 ? (Math.floor(c.life * 4) % 2 === 0 ? 0.4 : 1) : 1;
+
+            ctx.save();
+            ctx.globalAlpha = alpha;
+            ctx.translate(c.x, c.y + bob);
+
+            ctx.shadowColor = '#ffd700';
+            ctx.shadowBlur = 10;
+            ctx.fillStyle = '#ffd700';
+            ctx.beginPath();
+            ctx.arc(0, 0, c.radius, 0, Utils.PI2);
+            ctx.fill();
+
+            ctx.fillStyle = '#fff';
+            ctx.font = 'bold 10px monospace';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('$', 0, 0);
+
+            ctx.shadowBlur = 0;
+            ctx.restore();
         }
     },
 

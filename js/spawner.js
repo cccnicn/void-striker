@@ -59,6 +59,7 @@ const Spawner = {
             if (this.currentWave >= this.totalWaves) {
                 if (this.levelDef.boss && !this.bossSpawned) {
                     this.bossSpawned = true;
+                    this.waveClear = false;
                     Boss.spawn(this.levelDef.boss);
                     UI.showBossIntro(this.levelDef.bossName || 'BOSS');
                 } else if (!Boss.active || !Boss.active.alive) {

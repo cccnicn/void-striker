@@ -184,6 +184,9 @@ const Boss = {
             Audio.play('explode');
             Camera.shake(15, 0.8);
             Game.score += 500;
+
+            const bossCoins = { sentinel: 300, hive: 400, annihilator: 500 };
+            Game.spawnCoin(b.x, b.y, bossCoins[b.type] || 300);
         }
     },
 

@@ -2,6 +2,7 @@ const HUD = {
     render(ctx, canvasW, canvasH) {
         this.renderHealth(ctx, 20, 20);
         this.renderScore(ctx, canvasW - 20, 20);
+        this.renderCoins(ctx, canvasW - 20, 45);
         this.renderWave(ctx, canvasW / 2, 20);
         this.renderPowerups(ctx, 20, 60);
         if (Boss.active && Boss.active.alive) {
@@ -40,6 +41,14 @@ const HUD = {
         ctx.textAlign = 'right';
         ctx.textBaseline = 'top';
         ctx.fillText(Math.floor(Game.score).toString().padStart(8, '0'), x, y);
+    },
+
+    renderCoins(ctx, x, y) {
+        ctx.fillStyle = '#ffd700';
+        ctx.font = 'bold 18px monospace';
+        ctx.textAlign = 'right';
+        ctx.textBaseline = 'top';
+        ctx.fillText(`$${Game.coins}`, x, y);
     },
 
     renderWave(ctx, x, y) {

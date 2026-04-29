@@ -11,6 +11,8 @@ const Player = {
     fireRate: 0.12,
     speedMult: 1,
     fireRateMult: 1,
+    damageMult: 1,
+    pickupRange: 1,
     spreadShot: false,
     piercing: false,
     shieldHits: 0,
@@ -103,14 +105,15 @@ const Player = {
         const sin = Math.sin(this.angle);
         const bx = this.x + cos * 18;
         const by = this.y + sin * 18;
+        const dmg = this.damageMult;
 
         if (this.spreadShot) {
             for (let a = -1; a <= 1; a++) {
                 const ang = this.angle + a * 15 * Utils.DEG;
-                Bullets.spawn(bx, by, Math.cos(ang) * speed, Math.sin(ang) * speed, 'player', 1, this.piercing);
+                Bullets.spawn(bx, by, Math.cos(ang) * speed, Math.sin(ang) * speed, 'player', dmg, this.piercing);
             }
         } else {
-            Bullets.spawn(bx, by, cos * speed, sin * speed, 'player', 1, this.piercing);
+            Bullets.spawn(bx, by, cos * speed, sin * speed, 'player', dmg, this.piercing);
         }
 
         Particles.emit(bx, by, 3, 'muzzle');

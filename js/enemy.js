@@ -112,6 +112,9 @@ const Enemies = {
             Game.score += e.scoreValue;
             PowerUps.tryDrop(e.x, e.y, e.type);
 
+            const coinValues = { chaser: 10, shooter: 20, tank: 40, dasher: 15, splitter: 25 };
+            Game.spawnCoin(e.x, e.y, coinValues[e.type] || 10);
+
             if (e.type === 'splitter') {
                 for (let i = 0; i < 3; i++) {
                     const ang = Utils.PI2 / 3 * i;
