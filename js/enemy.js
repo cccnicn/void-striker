@@ -38,6 +38,7 @@ const Enemies = {
             e.y += e.vy * dt;
             e.x = Utils.clamp(e.x, e.radius, Utils.WORLD_W - e.radius);
             e.y = Utils.clamp(e.y, e.radius, Utils.WORLD_H - e.radius);
+            Game.checkObstacleCollision(e);
             e.angle = Utils.angle(e.x, e.y, px, py);
         }
     },

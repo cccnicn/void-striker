@@ -73,6 +73,7 @@ const Boss = {
 
         b.x = Utils.clamp(b.x, b.radius, Utils.WORLD_W - b.radius);
         b.y = Utils.clamp(b.y, b.radius, Utils.WORLD_H - b.radius);
+        Game.checkObstacleCollision(b);
 
         b.spiralAngle += dt * 3;
         b.angle += dt * 0.5;

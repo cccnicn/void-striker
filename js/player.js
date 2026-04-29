@@ -66,6 +66,8 @@ const Player = {
         this.x = Utils.clamp(this.x, this.radius, Utils.WORLD_W - this.radius);
         this.y = Utils.clamp(this.y, this.radius, Utils.WORLD_H - this.radius);
 
+        Game.checkObstacleCollision(this);
+
         this.angle = Utils.angle(this.x, this.y, Input.mouse.worldX, Input.mouse.worldY);
 
         this.fireTimer -= dt;

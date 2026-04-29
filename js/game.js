@@ -137,6 +137,29 @@ const Game = {
         }
     },
 
+    checkObstacleCollision(entity) {
+        for (const o of this.obstacles) {
+            if (Collision.circleRect(entity.x, entity.y, entity.radius, o.x, o.y, o.w, o.h)) {
+                const cx = o.x + o.w / 2;
+                const cy = o.y + o.h / 2;
+                const dx = entity.x - cx;
+                const dy = entity.y - cy;
+                const halfW = o.w / 2 + entity.radius;
+                const halfH = o.h / 2 + entity.radius;
+                const overlapX = halfW - Math.abs(dx);
+                const overlapY = halfH - Math.abs(dy);
+
+                if (overlapX < overlapY) {
+                    entity.x += dx > 0 ? overlapX : -overlapX;
+                } else {
+                    entity.y += dy > 0 ? overlapY : -overlapY;
+                }
+                return true;
+            }
+        }
+        return false;
+    },
+
     checkCollisions() {
         Collision.clear();
         for (const e of Enemies.list) Collision.insert(e);
