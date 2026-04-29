@@ -10,7 +10,11 @@ A top-down 2D twin-stick shooter built with HTML5 Canvas and vanilla JavaScript.
 - **7 Power-ups**: Health, Rapid Fire, Spread Shot, Shield, Piercing, Speed Boost, Nuke
 - **3 Boss Fights**: The Sentinel, The Hive, The Annihilator — multi-phase attack patterns
 - **3 Levels**: Void Arena, Neon Grid, The Core — distinct themes and obstacle layouts
-- **Complete Game Flow**: Title screen → Waves → Boss → Next level → Victory/Game Over
+- **Obstacle Collision**: Walls and barriers that block movement with sliding behavior
+- **Currency System**: Collect coins from enemies and bosses
+- **Shop & Upgrades**: Upgrade your ship between waves (speed, fire rate, damage, HP, pickup range)
+- **Persistent Progress**: Upgrades saved between game sessions
+- **Complete Game Flow**: Title screen → Waves → Shop → Boss → Next level → Victory/Game Over
 - **Polish**: Camera shake, screen flash, slow-mo, procedural audio, particle effects, minimap
 
 ## How to Play
@@ -28,9 +32,10 @@ A top-down 2D twin-stick shooter built with HTML5 Canvas and vanilla JavaScript.
 
 1. Click to start from the title screen
 2. Survive waves of enemies across 3 levels
-3. Collect power-ups dropped by enemies
-4. Defeat the boss at the end of each level
-5. Beat all 3 levels to win!
+3. Collect coins and power-ups dropped by enemies
+4. Visit the shop after each wave to upgrade your ship
+5. Defeat the boss at the end of each level
+6. Beat all 3 levels to win!
 
 ### Power-ups
 
@@ -43,6 +48,20 @@ A top-down 2D twin-stick shooter built with HTML5 Canvas and vanilla JavaScript.
 | `P` | Piercing Bullets | 8s |
 | `V` | 1.5x Move Speed | 10s |
 | `N` | Nuke (kill all enemies) | Instant |
+
+### Currency & Upgrades
+
+Enemies drop coins that you can spend in the shop between waves:
+
+| Upgrade | Max Level | Effect |
+|---------|-----------|--------|
+| Speed | 5 | Move faster (+15% per level) |
+| Fire Rate | 5 | Shoot faster (+20% per level) |
+| Damage | 5 | Deal more damage (+25% per level) |
+| Max HP | 5 | More health (+1 HP per level) |
+| Pickup Range | 3 | Collect power-ups from farther (+50% per level) |
+
+Upgrades persist between game sessions using localStorage.
 
 ## Running the Game
 
@@ -81,6 +100,8 @@ shooter/
     ├── audio.js        # Procedural sound
     ├── hud.js          # HUD rendering
     ├── ui.js           # Menu screens
+    ├── shop.js         # Shop UI & interaction
+    ├── upgrades.js     # Upgrade definitions & persistence
     └── utils.js        # Math helpers
 ```
 
@@ -94,6 +115,7 @@ The game uses pure vanilla JavaScript with no frameworks. All rendering is done 
 - **New Power-up**: Add to `powerup.js` and handle in `player.js`
 - **New Level**: Add to `level.js` with waves and boss definition
 - **New Boss**: Add to `boss.js` with phases and attack patterns
+- **New Upgrade**: Add to `upgrades.js` and apply in `player.js`
 
 ## License
 
